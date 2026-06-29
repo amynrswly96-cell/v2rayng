@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.v2ray.ang"
-    compileSdk = 37
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.v2ray.ang"
         minSdk = 24
-        targetSdk = 37
+        targetSdk = 35
         versionCode = 735
         versionName = "2.2.5"
         multiDexEnabled = true

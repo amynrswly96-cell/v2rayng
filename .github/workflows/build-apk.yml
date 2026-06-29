@@ -21,12 +21,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK 37
-        run: sdkmanager "platforms;android-37" "build-tools;35.0.0"
-
       - name: Download libv2ray.aar
         run: |
           mkdir -p app/libs
