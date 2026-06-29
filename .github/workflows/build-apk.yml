@@ -21,6 +21,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 37
+        run: sdkmanager "platforms;android-37" "build-tools;35.0.0"
+
       - name: Download libv2ray.aar
         run: |
           mkdir -p app/libs
@@ -30,10 +36,10 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build debug APK (fdroid flavor)
+      - name: Build debug APK
         run: ./gradlew assembleFdroidDebug --no-daemon
 
-      - name: Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: V2rayNG-debug-apk
