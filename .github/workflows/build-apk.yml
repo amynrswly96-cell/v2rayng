@@ -7,7 +7,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout modified code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -22,13 +22,13 @@ jobs:
           curl -L -o app/libs/libv2ray.aar \
             https://github.com/2dust/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
 
-      - name: Restore original build versions
+      - name: Fix build files
         run: |
-          sed -i 's/agp = .*/agp = "9.2.1"/' gradle/libs.versions.toml
-          sed -i 's/compileSdk = .*/compileSdk = 37/' app/build.gradle.kts
-          sed -i 's/targetSdk = .*/targetSdk = 35/' app/build.gradle.kts
-          sed -i 's/distributionUrl=.*/distributionUrl=https\\:\/\/services.gradle.org\/distributions\/gradle-9.5.1-bin.zip/' gradle/wrapper/gradle-wrapper.properties
+          sed -i '/alias(libs.plugins.kotlin.android)/d' app/build.gradle.kts
+          sed -i '/android.builtInKotlin/d' gradle.properties
+          sed -i '/android.newDsl/d' gradle.properties
           echo "android.suppressUnsupportedCompileSdk=37" >> gradle.properties
+          echo "android.defaults.buildfeatures.buildconfig=true" >> gradle.properties
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
