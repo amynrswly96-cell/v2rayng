@@ -1,18 +1,13 @@
 name: Build Debug APK
-
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
-
+    branches: [main, master]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout modified code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -21,20 +16,27 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download libv2ray.aar
+      - name: Download libv2ray
         run: |
           mkdir -p app/libs
           curl -L -o app/libs/libv2ray.aar \
-            https://github.com/2dust/AndroidLibXrayLite/releases/download/v26.5.9/libv2ray.aar
+            https://github.com/2dust/AndroidLibXrayLite/releases/latest/download/libv2ray.aar
+
+      - name: Restore original build versions
+        run: |
+          sed -i 's/agp = .*/agp = "9.2.1"/' gradle/libs.versions.toml
+          sed -i 's/compileSdk = .*/compileSdk = 37/' app/build.gradle.kts
+          sed -i 's/targetSdk = .*/targetSdk = 35/' app/build.gradle.kts
+          sed -i 's/distributionUrl=.*/distributionUrl=https\\:\/\/services.gradle.org\/distributions\/gradle-9.5.1-bin.zip/' gradle/wrapper/gradle-wrapper.properties
+          echo "android.suppressUnsupportedCompileSdk=37" >> gradle.properties
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: Build debug APK
-        run: ./gradlew assembleFdroidDebug --no-daemon
+      - name: Build APK
+        run: ./gradlew assembleFdroidDebug --no-daemon --warning-mode=none
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: V2rayNG-debug-apk
           path: app/build/outputs/apk/fdroid/debug/*.apk
